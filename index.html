@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>感官與節奏挑戰</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f1ea; --card:#fffdf9; --ink:#3b3833; --muted:#8b8478; --line:#e7dfd2;
+  --accent:#5f9283; --accent-soft:#dcebe5; --warm:#e09a72; --warm-soft:#f8e5d8;
+  --radius:18px;
+  --cyan:#36e6ff; --pink:#ff4fd8; --violet:#8b6cff;
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html,body{margin:0}
+body{
+  font-family:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.6; min-height:100vh;
+  transition:background .4s,color .4s;
+  -webkit-tap-highlight-color:transparent;
+}
+.wrap{max-width:880px;margin:0 auto;padding:20px 16px 48px}
+a{color:inherit}
+
+/* ---------- Header / Home ---------- */
+.site-head{text-align:center;padding:28px 0 12px}
+.site-head h1{margin:0;font-size:clamp(30px,6vw,44px);font-weight:900;letter-spacing:.06em}
+.site-head h1 span{color:var(--accent)}
+.site-head p{margin:6px 0 0;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:28px}
+@media (max-width:600px){.tiles{grid-template-columns:1fr}}
+.tile{
+  display:flex;gap:16px;align-items:center;text-decoration:none;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px;transition:transform .2s,box-shadow .2s;
+}
+.tile:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(90,70,40,.10)}
+.tile .icon{flex:none;width:64px;height:64px;border-radius:16px;display:grid;place-items:center}
+.tile h3{margin:0;font-size:19px}
+.tile p{margin:2px 0 6px;color:var(--muted);font-size:14px}
+.tile .best{font-size:12px;color:var(--accent);background:var(--accent-soft);padding:2px 10px;border-radius:99px}
+.tile.drum-tile{background:linear-gradient(135deg,#1b1736,#100e24);border-color:#2c2650;color:#ece9ff}
+.tile.drum-tile p{color:#a9a3d6}
+.tile.drum-tile .best{background:rgba(54,230,255,.12);color:var(--cyan)}
+footer{text-align:center;color:var(--muted);font-size:13px;margin-top:40px}
+
+/* ---------- Game layout ---------- */
+.game-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 16px}
+.game-head h2{margin:0;font-size:24px;flex:1 1 auto;text-align:center}
+.back{text-decoration:none;color:var(--muted);font-weight:500;padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--card)}
+.back:hover{color:var(--ink)}
+.stats{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;width:100%}
+.stats span{font-size:13px;color:var(--muted);background:var(--card);border:1px solid var(--line);padding:3px 12px;border-radius:99px}
+.stats b{color:var(--ink)}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:24px 20px;text-align:center;box-shadow:0 6px 24px rgba(90,70,40,.06);
+}
+.prompt{font-size:20px;margin:0 0 8px}
+.prompt b{font-size:34px;color:var(--accent);font-weight:900;margin:0 4px}
+.hint{color:var(--muted);font-size:14px;margin:8px 0}
+.stage{width:100%;max-width:420px;display:block;margin:0 auto;user-select:none}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.btn{
+  font:inherit;font-weight:700;font-size:16px;cursor:pointer;
+  border:1.5px solid var(--line);background:var(--card);color:var(--ink);
+  padding:10px 22px;border-radius:99px;transition:transform .1s,background .2s;
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+}
+.btn:hover{background:#f8f4ec}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:#548375}
+.btn.big{font-size:19px;padding:16px 40px}
+.hold{touch-action:none}
+.hold.pressing{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(.96)}
+kbd{font-family:inherit;font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:0 6px;background:#fff}
+
+.result{margin-top:12px;animation:rise .35s ease}
+.result .score{font-weight:900;color:var(--accent);line-height:1}
+.result .score .num{font-size:56px}
+.result .score .unit{font-size:18px;margin-left:4px}
+.result .grade{font-size:18px;font-weight:700;margin:4px 0}
+.result .detail{color:var(--muted);font-size:15px}
+.result .detail b{color:var(--ink)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* angle */
+.ang-guide{fill:none;stroke:var(--line);stroke-width:2;stroke-dasharray:4 7}
+.ang-wedge{fill:var(--accent-soft)}
+.ang-arm{stroke:var(--ink);stroke-width:7;stroke-linecap:round}
+.ang-arm.moving{stroke:var(--accent)}
+.ang-arm.target{stroke:var(--warm);stroke-width:5;stroke-dasharray:12 9}
+.ang-vertex{fill:var(--ink)}
+
+/* color */
+.swatch{width:100%;max-width:260px;aspect-ratio:1.6;border-radius:16px;margin:10px auto;border:1px solid rgba(0,0,0,.06);box-shadow:inset 0 0 0 6px rgba(255,255,255,.35)}
+.swatch.big{max-width:320px}
+.picker{max-width:340px;margin:14px auto;display:grid;gap:16px}
+.rgb-row{display:grid;grid-template-columns:28px 1fr 44px;align-items:center;gap:10px}
+.rgb-row b{font-size:18px}
+.rgb-row output{font-family:ui-monospace,Menlo,monospace;font-weight:700;text-align:right}
+.rgb-row input{-webkit-appearance:none;appearance:none;width:100%;height:22px;border-radius:99px;outline:none;cursor:pointer;margin:0;touch-action:none}
+.rgb-row input::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:#fff;border:3px solid var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.rgb-row input::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--ink)}
+.step-btns{display:flex;gap:4px}
+.mine-row{display:flex;align-items:center;justify-content:center;gap:12px}
+.mine-row .swatch{max-width:160px;margin:0}
+.compare{display:flex;gap:14px;justify-content:center}
+.compare>div{flex:1;max-width:200px}
+.compare .swatch{margin:4px 0}
+.compare small{color:var(--muted);font-family:ui-monospace,Menlo,monospace}
+
+/* level */
+.seg{display:inline-flex;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:4px;margin-bottom:14px}
+.seg button{font:inherit;font-weight:700;border:0;background:transparent;color:var(--muted);padding:6px 18px;border-radius:99px;cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.lv-stage{max-width:520px;overflow:visible}
+.lv-ctrl{display:flex;gap:10px;justify-content:center;align-items:center;margin-top:14px}
+.lv-ctrl .rot{width:64px;height:56px;padding:0;font-size:22px;touch-action:none}
+.rot.pressing{background:var(--accent-soft)}
+.lv-ref{stroke:var(--warm);stroke-width:2.5;stroke-dasharray:8 6;fill:none}
+
+/* ---------- Drum (dark neon) ---------- */
+body[data-view="drum"]{background:#0d0b1c;color:#e9e7ff}
+body[data-view="drum"] .back{background:#17142e;border-color:#2c2650;color:#a9a3d6}
+body[data-view="drum"] .stats span{background:#17142e;border-color:#2c2650;color:#a9a3d6}
+body[data-view="drum"] .stats b{color:#fff}
+body[data-view="drum"] .game-head h2{font-family:"Orbitron","Noto Sans TC",sans-serif;letter-spacing:.06em;text-shadow:0 0 12px rgba(139,108,255,.8)}
+.drum-card{
+  background:linear-gradient(160deg,#18143a,#0f0d22);border:1px solid #2c2650;border-radius:22px;
+  padding:24px 18px;text-align:center;box-shadow:0 0 50px rgba(139,108,255,.18),inset 0 0 40px rgba(54,230,255,.04);
+  position:relative;overflow:hidden;
+}
+.drum-info{display:flex;justify-content:center;align-items:center;gap:22px;flex-wrap:wrap}
+.bpm{font-family:"Orbitron",sans-serif;font-weight:800;font-size:54px;line-height:1;color:var(--cyan);text-shadow:0 0 18px rgba(54,230,255,.7)}
+.bpm small{font-size:16px;margin-left:6px;color:#a9a3d6;text-shadow:none}
+.pattern{font-size:22px;font-weight:900;color:#fff;text-align:left}
+.pattern small{display:block;font-size:13px;font-weight:500;color:#a9a3d6}
+.lights{display:flex;gap:18px;justify-content:center;margin:20px 0 8px}
+.light{width:20px;height:20px;border-radius:50%;border:2px solid #3a3366;transition:background .06s,box-shadow .06s}
+.light.on{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 16px var(--cyan)}
+.light.accent.on{background:var(--pink);border-color:var(--pink);box-shadow:0 0 16px var(--pink)}
+.sticking{display:flex;flex-wrap:wrap;gap:12px;row-gap:24px;justify-content:center;margin:26px 0 12px}
+.beat-group{display:flex;gap:4px;padding:6px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid #2c2650}
+.chip.first::before{content:'♩';position:absolute;top:-19px;left:50%;transform:translateX(-50%);font-size:13px;color:#ffe45e}
+.chip{position:relative;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-weight:900;font-size:14px;transition:transform .05s,box-shadow .05s}
+.chip.L{color:var(--cyan);border:1.5px solid rgba(54,230,255,.45)}
+.chip.R{color:var(--pink);border:1.5px solid rgba(255,79,216,.45)}
+.chip.now.L{background:var(--cyan);color:#0d0b1c;box-shadow:0 0 14px var(--cyan);transform:scale(1.12)}
+.chip.now.R{background:var(--pink);color:#0d0b1c;box-shadow:0 0 14px var(--pink);transform:scale(1.12)}
+.dr-status{min-height:26px;color:#a9a3d6;font-size:15px}
+.dr-count{font-family:"Orbitron",sans-serif;font-size:60px;font-weight:800;color:#fff;height:72px;line-height:72px;text-shadow:0 0 20px rgba(139,108,255,.9)}
+.judge{height:34px;font-family:"Orbitron","Noto Sans TC",sans-serif;font-weight:800;font-size:24px;letter-spacing:.04em}
+.judge.show{animation:pop .45s ease}
+.judge.perfect{color:#ffe45e;text-shadow:0 0 14px rgba(255,228,94,.8)}
+.judge.great{color:var(--cyan);text-shadow:0 0 14px rgba(54,230,255,.7)}
+.judge.good{color:#7dffb0}
+.judge.bad,.judge.miss{color:#ff6b8a}
+@keyframes pop{0%{transform:scale(.6);opacity:0}40%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+.pads{display:flex;justify-content:center;margin:6px 0}
+.pad{
+  position:relative;background:none;border:0;padding:0;width:min(88vw,360px);cursor:pointer;color:#fff;font:inherit;
+  touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+}
+.pad svg{width:100%;display:block;overflow:visible;transition:filter .1s}
+.pad .labels{display:flex;justify-content:space-between;padding:0 16%;font-weight:900;font-size:18px}
+.pad .labels .lL{color:var(--cyan)} .pad .labels .lR{color:var(--pink)}
+.pad kbd{background:#17142e;border-color:#3a3366;color:#a9a3d6}
+.pad .shell{fill:#1d1940;stroke:#8b6cff;stroke-width:3}
+.pad .rim{fill:none;stroke:#b9b3e6;stroke-width:4}
+.pad .head{fill:#d9d6f0;transition:fill .1s}
+.pad .lugs rect{fill:#8b86b8}
+.pad .stick line{stroke:#e8cfa0;stroke-width:7;stroke-linecap:round}
+.pad .stick circle{fill:#f6e6c4}
+.pad .stick{transition:transform .07s ease-out}
+.pad .stick.L{transform-origin:40px 14px;transform:rotate(-26deg)}
+.pad .stick.R{transform-origin:280px 14px;transform:rotate(26deg)}
+.pad.hitL .stick.L,.pad.hitR .stick.R{transform:rotate(0deg)}
+.pad.hitL .head{fill:#bff6ff} .pad.hitR .head{fill:#ffd0f4}
+.pad.hitL svg{filter:drop-shadow(0 0 16px rgba(54,230,255,.8))}
+.pad.hitR svg{filter:drop-shadow(0 0 16px rgba(255,79,216,.8))}
+.pad .stick.L line{stroke:#bfeef5} .pad .stick.R line{stroke:#f5c6ea}
+.chip.rest{color:#6f6a99;border:1.5px dashed #3a3366}
+.chip.now.rest{background:#2c2650;color:#cfcaf5;box-shadow:none;transform:scale(1.12)}
+.dr-mode{margin-bottom:14px;background:#17142e;border-color:#2c2650}
+.dr-mode button{color:#a9a3d6}
+.dr-mode button.on{background:var(--violet);color:#fff}
+.btn.neon{background:transparent;color:#fff;border:2px solid var(--violet);box-shadow:0 0 14px rgba(139,108,255,.5)}
+.btn.neon:hover{background:rgba(139,108,255,.15)}
+.btn.neon.solid{background:var(--violet)}
+.btn.neon:disabled{opacity:.4;cursor:default}
+.dr-result{margin-top:10px;animation:rise .35s ease}
+.dr-result .num{font-family:"Orbitron",sans-serif;font-size:60px;font-weight:800;color:#ffe45e;text-shadow:0 0 20px rgba(255,228,94,.6);line-height:1}
+.dr-result .grade{font-size:18px;font-weight:700;margin:6px 0 10px}
+.tally{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0}
+.tally span{font-size:13px;padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.06);border:1px solid #2c2650}
+.dr-result .detail{color:#cfcaf5;font-size:15px}
+.dr-note{color:#7e78ad;font-size:12px;margin-top:14px}
+</style>
+</head>
+<body data-view="home">
+<div class="wrap">
+
+<!-- ================= HOME ================= -->
+<section class="view" id="view-home">
+  <header class="site-head">
+    <h1>感官與<span>節奏挑戰</span></h1>
+    <p>把對角度、色彩、水平與節奏的主觀感知，變成能回饋結果的互動挑戰</p>
+  </header>
+  <div class="tiles">
+    <a class="tile" href="#angle">
+      <div class="icon" style="background:var(--accent-soft)">
+        <svg width="40" height="40" viewBox="0 0 40 40"><path d="M8 32 L34 32 M8 32 L28 10" stroke="#5f9283" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M18 32 A10 10 0 0 0 15 24.5" stroke="#e09a72" stroke-width="3" fill="none"/></svg>
+      </div>
+      <div><h3>角度直覺</h3><p>長按張開，憑感覺做出指定角度</p><span class="best" data-best="angle"></span></div>
+    </a>
+    <a class="tile" href="#color">
+      <div class="icon" style="background:var(--warm-soft)">
+        <svg width="40" height="40" viewBox="0 0 40 40"><circle cx="14" cy="16" r="9" fill="#e09a72" opacity=".9"/><circle cx="26" cy="16" r="9" fill="#5f9283" opacity=".8"/><circle cx="20" cy="26" r="9" fill="#e9c46a" opacity=".85"/></svg>
+      </div>
+      <div><h3>色彩記憶</h3><p>記住顏色，再用 RGB 滑桿憑記憶調出來</p><span class="best" data-best="color"></span></div>
+    </a>
+    <a class="tile" href="#level">
+      <div class="icon" style="background:#e7ecf3">
+        <svg width="40" height="40" viewBox="0 0 40 40"><rect x="4" y="14" width="32" height="12" rx="6" fill="none" stroke="#6b84a3" stroke-width="3"/><rect x="15" y="17" width="10" height="6" rx="3" fill="#9cc5a1"/><line x1="14" y1="14" x2="14" y2="26" stroke="#6b84a3" stroke-width="2"/><line x1="26" y1="14" x2="26" y2="26" stroke="#6b84a3" stroke-width="2"/></svg>
+      </div>
+      <div><h3>水平大師</h3><p>把歪掉的畫和相機畫面調回水平</p><span class="best" data-best="level"></span></div>
+    </a>
+    <a class="tile drum-tile" href="#drum">
+      <div class="icon" style="background:rgba(139,108,255,.18)">
+        <svg width="40" height="40" viewBox="0 0 40 40"><ellipse cx="20" cy="24" rx="13" ry="5" fill="none" stroke="#36e6ff" stroke-width="2.5"/><path d="M7 24 V30 A13 5 0 0 0 33 30 V24" fill="none" stroke="#36e6ff" stroke-width="2.5"/><line x1="12" y1="6" x2="19" y2="20" stroke="#ff4fd8" stroke-width="2.5" stroke-linecap="round"/><line x1="28" y1="6" x2="21" y2="20" stroke="#ff4fd8" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </div>
+      <div><h3>節奏鼓手</h3><p>跟著節拍器練習手順與空拍</p><span class="best" data-best="drum"></span></div>
+    </a>
+  </div>
+  <footer>Made with Vibe Coding ・ 成績只會儲存在你自己的瀏覽器中</footer>
+</section>
+
+<!-- ================= ANGLE ================= -->
+<section class="view" id="view-angle" hidden>
+  <div class="game-head">
+    <a class="back" href="#home">← 首頁</a><h2>角度直覺</h2><div class="stats" data-stats="angle"></div>
+  </div>
+  <div class="card">
+    <p class="prompt">請張開到<b id="angTarget">--</b>度</p>
+    <svg class="stage" id="angSvg" viewBox="0 0 400 400">
+      <circle cx="200" cy="200" r="150" class="ang-guide"/>
+      <path id="angWedge" class="ang-wedge" d=""/>
+      <line x1="200" y1="200" x2="350" y2="200" class="ang-arm"/>
+      <line id="angTargetArm" x1="200" y1="200" x2="350" y2="200" class="ang-arm target" style="display:none"/>
+      <line id="angArm" x1="200" y1="200" x2="350" y2="200" class="ang-arm moving"/>
+      <circle cx="200" cy="200" r="8" class="ang-vertex"/>
+    </svg>
+    <p class="hint" id="angHint">按住按鈕（或 <kbd>空白鍵</kbd>）讓角度張開，放開就會停止並送出</p>
+    <div class="result" id="angResult" hidden></div>
+    <div class="actions">
+      <button class="btn primary big hold" id="angHold">按住張開</button>
+      <button class="btn primary" id="angNext" hidden>下一題 →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COLOR ================= -->
+<section class="view" id="view-color" hidden>
+  <div class="game-head">
+    <a class="back" href="#home">← 首頁</a><h2>色彩記憶</h2><div class="stats" data-stats="color"></div>
+  </div>
+  <div class="card">
+    <div id="colMemo">
+      <p class="prompt">仔細記住這個顏色</p>
+      <div class="swatch big" id="colTarget"></div>
+      <p class="hint">準備好後按下按鈕，題目就會消失</p>
+      <div class="actions"><button class="btn primary big" id="colReady">記住了！</button></div>
+    </div>
+    <div id="colPick" hidden>
+      <p class="prompt">憑記憶調出剛才的顏色</p>
+      <p class="hint">拖動紅 (R)、綠 (G)、藍 (B) 三條滑桿混出顏色</p>
+      <div class="mine-row"><span class="hint">你的顏色</span><div class="swatch" id="colMine"></div></div>
+      <div class="picker">
+        <label class="rgb-row"><b style="color:#d0524a">R</b><input type="range" min="0" max="255" id="sR"><output id="oR"></output></label>
+        <label class="rgb-row"><b style="color:#4a9a5a">G</b><input type="range" min="0" max="255" id="sG"><output id="oG"></output></label>
+        <label class="rgb-row"><b style="color:#4a72c4">B</b><input type="range" min="0" max="255" id="sB"><output id="oB"></output></label>
+      </div>
+      <div class="actions"><button class="btn primary big" id="colSubmit">確定</button></div>
+    </div>
+    <div id="colRes" hidden>
+      <div class="compare">
+        <div><div class="swatch" id="cmpT"></div><small id="cmpTx"></small><div class="hint">題目</div></div>
+        <div><div class="swatch" id="cmpM"></div><small id="cmpMx"></small><div class="hint">你調的</div></div>
+      </div>
+      <div class="result" id="colScore"></div>
+      <div class="actions"><button class="btn primary" id="colNext">下一題 →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LEVEL ================= -->
+<section class="view" id="view-level" hidden>
+  <div class="game-head">
+    <a class="back" href="#home">← 首頁</a><h2>水平大師</h2><div class="stats" data-stats="level"></div>
+  </div>
+  <div class="card">
+    <div class="seg" id="lvSeg">
+      <button data-mode="paint" class="on">🖼️ 牆上掛畫</button>
+      <button data-mode="cam">📷 相機取景</button>
+    </div>
+    <svg class="stage lv-stage" id="lvSvg" viewBox="0 0 400 300">
+      <defs>
+        <linearGradient id="gSunset" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6c99f"/><stop offset="1" stop-color="#ee8f72"/></linearGradient>
+        <linearGradient id="gSky" gradientUnits="userSpaceOnUse" x1="0" y1="-20" x2="0" y2="180"><stop offset="0" stop-color="#7fbfdc"/><stop offset="1" stop-color="#e3f1ef"/></linearGradient>
+        <linearGradient id="gSkyPale" gradientUnits="userSpaceOnUse" x1="0" y1="-20" x2="0" y2="180"><stop offset="0" stop-color="#a9cde0"/><stop offset="1" stop-color="#f1f4ee"/></linearGradient>
+        <linearGradient id="gDusk" gradientUnits="userSpaceOnUse" x1="0" y1="-20" x2="0" y2="180"><stop offset="0" stop-color="#6c7fb8"/><stop offset="1" stop-color="#f6b08a"/></linearGradient>
+        <linearGradient id="gNight" gradientUnits="userSpaceOnUse" x1="0" y1="-20" x2="0" y2="180"><stop offset="0" stop-color="#0b1230"/><stop offset="1" stop-color="#2b3a6b"/></linearGradient>
+        <linearGradient id="gSea" gradientUnits="userSpaceOnUse" x1="0" y1="140" x2="0" y2="320"><stop offset="0" stop-color="#3f86a0"/><stop offset="1" stop-color="#21566d"/></linearGradient>
+        <linearGradient id="gLake" gradientUnits="userSpaceOnUse" x1="0" y1="140" x2="0" y2="320"><stop offset="0" stop-color="#9fc4cf"/><stop offset="1" stop-color="#4c7f8f"/></linearGradient>
+        <radialGradient id="gVignette" cx=".5" cy=".5" r=".5"><stop offset=".72" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".4"/></radialGradient>
+        <clipPath id="cStage"><path id="lvClip" d=""/></clipPath>
+      </defs>
+      <g clip-path="url(#cStage)">
+        <g id="lvBg"></g>
+        <g id="lvRot"></g>
+        <g id="lvFg"></g>
+        <g id="lvRef" style="display:none"></g>
+      </g>
+      <path id="lvOutline" fill="none" d=""/>
+    </svg>
+    <p class="hint" id="lvHint"><kbd>←</kbd> 抬高左邊、<kbd>→</kbd> 抬高右邊（也可按住下方按鈕），覺得水平了按 <kbd>Enter</kbd></p>
+    <div class="result" id="lvResult" hidden></div>
+    <div class="lv-ctrl" id="lvCtrl">
+      <button class="btn rot" id="lvLeft" aria-label="抬高左邊">←</button>
+      <button class="btn primary big" id="lvDone">完成</button>
+      <button class="btn rot" id="lvRight" aria-label="抬高右邊">→</button>
+    </div>
+    <div class="actions"><button class="btn primary" id="lvNext" hidden>下一題 →</button></div>
+  </div>
+</section>
+
+<!-- ================= DRUM ================= -->
+<section class="view" id="view-drum" hidden>
+  <div class="game-head">
+    <a class="back" href="#home">← 首頁</a><h2>節奏鼓手</h2><div class="stats" data-stats="drum"></div>
+  </div>
+  <div class="drum-card">
+    <div class="seg dr-mode" id="drMode">
+      <button data-mode="basic" class="on">基本</button>
+      <button data-mode="adv">進階（含空拍）</button>
+    </div>
+    <div class="drum-info">
+      <div class="bpm"><span id="drBpm">--</span><small>BPM</small></div>
+      <div class="pattern" id="drPattern"></div>
+    </div>
+    <div class="lights" id="drLights">
+      <div class="light accent"></div><div class="light"></div><div class="light"></div><div class="light"></div>
+    </div>
+    <div class="sticking" id="drSticking"></div>
+    <div class="dr-count" id="drCount"></div>
+    <div class="dr-status" id="drStatus"></div>
+    <div class="judge" id="drJudge"></div>
+    <div class="pads">
+      <button class="pad" id="drPad" aria-label="小鼓：點左半邊為左手、右半邊為右手">
+        <svg viewBox="0 0 320 170">
+          <path class="shell" d="M70 96 V136 A90 24 0 0 0 250 136 V96"/>
+          <g class="lugs"><rect x="86" y="106" width="8" height="24" rx="2"/><rect x="126" y="114" width="8" height="24" rx="2"/><rect x="186" y="114" width="8" height="24" rx="2"/><rect x="226" y="106" width="8" height="24" rx="2"/></g>
+          <ellipse class="head" cx="160" cy="96" rx="90" ry="24"/><ellipse class="rim" cx="160" cy="96" rx="90" ry="24"/>
+          <g class="stick L"><line x1="40" y1="14" x2="132" y2="88"/><circle cx="134" cy="90" r="5"/></g>
+          <g class="stick R"><line x1="280" y1="14" x2="188" y2="88"/><circle cx="186" cy="90" r="5"/></g>
+        </svg>
+        <div class="labels"><span class="lL">左 <kbd>F</kbd></span><span class="lR">右 <kbd>J</kbd></span></div>
+      </button>
+    </div>
+    <div class="dr-result" id="drResult" hidden></div>
+    <div class="actions">
+      <button class="btn neon solid" id="drStart">▶ 開始</button>
+      <button class="btn neon" id="drNext">下一題 →</button>
+    </div>
+    <p class="dr-note">按開始後會先預備 4 拍，接著打 4 小節；標有 ♩ 的是每拍的拍點，要和節拍器的「嗒」聲同時打；進階模式中標「空」的地方不要打。若判定總是偏早或偏晚，可能是藍牙耳機延遲，建議改用喇叭或有線耳機。</p>
+  </div>
+</section>
+
+</div>
+
+<script>
+/* =========================================================
+   共用工具
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const rand = (a, b) => a + Math.random() * (b - a);
+const GAMES = ['angle', 'color', 'level', 'drum'];
+
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem('sense-' + k)); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem('sense-' + k, JSON.stringify(v)); } catch (e) {} }
+};
+const stats = {};
+GAMES.forEach(g => stats[g] = store.get(g) || { n: 0, sum: 0, best: 0 });
+
+function renderStats(g) {
+  const s = stats[g];
+  const avg = s.n ? Math.round(s.sum / s.n) : '-';
+  $(`[data-stats="${g}"]`).innerHTML =
+    `<span>已玩 <b>${s.n}</b> 題</span><span>平均 <b>${avg}</b></span><span>最佳 <b>${s.n ? s.best : '-'}</b></span>`;
+  $(`[data-best="${g}"]`).textContent = s.n ? `最佳 ${s.best} 分` : '尚未挑戰';
+}
+function record(g, score) {
+  const s = stats[g];
+  s.n++; s.sum += score; s.best = Math.max(s.best, score);
+  store.set(g, s); renderStats(g);
+}
+GAMES.forEach(renderStats);
+
+function grade(score) {
+  if (score >= 95) return '🎯 神準！';
+  if (score >= 85) return '✨ 非常好';
+  if (score >= 70) return '👍 不錯喔';
+  if (score >= 50) return '💪 再接再厲';
+  return '🌱 多練習幾次就會進步';
+}
+function resultHTML(score, detail) {
+  return `<div class="score"><span class="num">${score}</span><span class="unit">分</span></div>
+          <div class="grade">${grade(score)}</div><div class="detail">${detail}</div>`;
+}
+// 長按類按鈕：按下 / 放開
+function holdButton(el, onDown, onUp) {
+  el.addEventListener('contextmenu', e => e.preventDefault());
+  el.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    try { el.setPointerCapture(e.pointerId); } catch (err) {}
+    el.classList.add('pressing'); onDown();
+  });
+  const up = () => { if (!el.classList.contains('pressing')) return; el.classList.remove('pressing'); onUp(); };
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(t => el.addEventListener(t, up));
+}
+
+/* =========================================================
+   頁面切換（hash 路由）
+   ========================================================= */
+function show(view) {
+  document.querySelectorAll('.view').forEach(v => v.hidden = v.id !== 'view-' + view);
+  document.body.dataset.view = view;
+  if (view !== 'drum') drStop();
+  window.scrollTo(0, 0);
+}
+function route() {
+  const h = location.hash.slice(1);
+  show(GAMES.includes(h) ? h : 'home');
+}
+window.addEventListener('hashchange', route);
+
+/* =========================================================
+   遊戲一：角度直覺
+   ========================================================= */
+const ang = { target: 0, cur: 0, holding: false, done: false, last: 0, raf: 0 };
+const ANG_SPEED = 60;          // 每秒張開幾度
+const ANG_R = 150;
+const pt = (deg, r) => { const a = deg * Math.PI / 180; return [200 + r * Math.cos(a), 200 - r * Math.sin(a)]; };
+
+function angDraw() {
+  const [x, y] = pt(ang.cur, ANG_R);
+  const arm = $('#angArm'); arm.setAttribute('x2', x); arm.setAttribute('y2', y);
+  const r = 48;
+  if (ang.cur < 0.05) { $('#angWedge').setAttribute('d', ''); return; }
+  const [ax, ay] = pt(ang.cur, r);
+  const large = ang.cur > 180 ? 1 : 0;
+  $('#angWedge').setAttribute('d', `M200 200 L${200 + r} 200 A${r} ${r} 0 ${large} 0 ${ax} ${ay} Z`);
+}
+function angNew() {
+  ang.target = 10 + Math.floor(Math.random() * 341);   // 10° ~ 350°
+  ang.cur = 0; ang.done = false; ang.holding = false;
+  $('#angTarget').textContent = ang.target;
+  $('#angResult').hidden = true; $('#angNext').hidden = true;
+  $('#angHold').hidden = false; $('#angHint').hidden = false;
+  $('#angTargetArm').style.display = 'none';
+  angDraw();
+}
+function angLoop(now) {
+  const dt = (now - ang.last) / 1000; ang.last = now;
+  ang.cur += ANG_SPEED * dt;
+  if (ang.cur >= 359.9) { ang.cur = 359.9; angDraw(); angEnd(); return; }
+  angDraw();
+  ang.raf = requestAnimationFrame(angLoop);
+}
+function angStart() {
+  if (ang.done || ang.holding) return;
+  ang.holding = true; ang.last = performance.now();
+  $('#angHold').classList.add('pressing');
+  ang.raf = requestAnimationFrame(angLoop);
+}
+function angEnd() {
+  if (!ang.holding) return;
+  ang.holding = false; cancelAnimationFrame(ang.raf);
+  $('#angHold').classList.remove('pressing');
+  angSubmit();
+}
+function angSubmit() {
+  ang.done = true;
+  const diff = Math.abs(ang.cur - ang.target);
+  const score = Math.max(0, Math.round(100 - diff * 3));
+  const [tx, ty] = pt(ang.target, ANG_R);
+  const t = $('#angTargetArm'); t.setAttribute('x2', tx); t.setAttribute('y2', ty); t.style.display = '';
+  const dir = diff < 0.5 ? '幾乎完全一樣！' : (ang.cur > ang.target ? '張太開了' : '還不夠開');
+  $('#angResult').innerHTML = resultHTML(score,
+    `你的角度 <b>${ang.cur.toFixed(1)}°</b>，目標 <b>${ang.target}°</b><br>誤差 <b>${diff.toFixed(1)}°</b>・${dir}（橘色虛線是正確位置）`);
+  $('#angResult').hidden = false; $('#angHold').hidden = true; $('#angHint').hidden = true;
+  $('#angNext').hidden = false;
+  record('angle', score);
+}
+holdButton($('#angHold'), angStart, angEnd);
+$('#angNext').addEventListener('click', angNew);
+
+/* =========================================================
+   遊戲二：色彩記憶
+   ========================================================= */
+const col = { t: null, m: [128, 128, 128] };
+function hsv2rgb(h, s, v) {
+  const f = n => { const k = (n + h / 60) % 6; return v - v * s * Math.max(0, Math.min(k, 4 - k, 1)); };
+  return [f(5), f(3), f(1)].map(x => Math.round(x * 255));
+}
+const hex = rgb => '#' + rgb.map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase();
+const SL = ['R', 'G', 'B'];
+function colUpdate() {
+  const m = col.m;
+  SL.forEach((k, i) => {
+    $('#s' + k).value = m[i]; $('#o' + k).textContent = m[i];
+    const lo = m.slice(), hi = m.slice(); lo[i] = 0; hi[i] = 255;
+    $('#s' + k).style.background = `linear-gradient(90deg, rgb(${lo}), rgb(${hi}))`;
+  });
+  $('#colMine').style.background = `rgb(${m})`;
+}
+SL.forEach((k, i) => $('#s' + k).addEventListener('input', e => { col.m[i] = +e.target.value; colUpdate(); }));
+
+function colNew() {
+  col.t = hsv2rgb(rand(0, 360), rand(.35, .95), rand(.45, .95));
+  $('#colTarget').style.background = hex(col.t);
+  $('#colMemo').hidden = false; $('#colPick').hidden = true; $('#colRes').hidden = true;
+}
+$('#colReady').addEventListener('click', () => {
+  col.m = [128, 128, 128];
+  $('#colMemo').hidden = true; $('#colPick').hidden = false;
+  colUpdate();
+});
+$('#colSubmit').addEventListener('click', () => {
+  const t = col.t, m = col.m.slice();
+  const diffs = t.map((v, i) => m[i] - v);
+  const dist = Math.hypot(...diffs);                       // RGB 空間距離（0 ~ 441）
+  const score = Math.max(0, Math.round(100 * (1 - dist / 300)));
+  const name = ['紅', '綠', '藍'];
+  const tips = diffs.map((d, i) => Math.abs(d) <= 12 ? `${name[i]}很準` : `${name[i]}${d > 0 ? '多' : '少'}了 ${Math.abs(d)}`);
+  $('#cmpT').style.background = hex(t); $('#cmpTx').textContent = `RGB(${t.join(', ')})`;
+  $('#cmpM').style.background = hex(m); $('#cmpMx').textContent = `RGB(${m.join(', ')})`;
+  $('#colScore').innerHTML = resultHTML(score, `RGB 距離 <b>${dist.toFixed(0)}</b><br>${tips.join('・')}`);
+  $('#colPick').hidden = true; $('#colRes').hidden = false;
+  record('color', score);
+});
+$('#colNext').addEventListener('click', colNew);
+
+/* =========================================================
+   遊戲三：水平大師
+   ========================================================= */
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const sgn = (a, b) => rand(a, b) * (Math.random() < .5 ? -1 : 1);
+const f1 = n => (+n).toFixed(1);
+const R = (x, y, w, h, fill, ex = '') => `<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" fill="${fill}" ${ex}/>`;
+const C = (cx, cy, r, fill, ex = '') => `<circle cx="${f1(cx)}" cy="${f1(cy)}" r="${f1(r)}" fill="${fill}" ${ex}/>`;
+const P = (pts, fill, ex = '') => `<path d="M${pts.map(p => f1(p[0]) + ' ' + f1(p[1])).join(' L')} Z" fill="${fill}" ${ex}/>`;
+const BIG = (y1, y2, fill) => R(-400, y1, 1200, y2 - y1, fill);
+const PAL = ['#e07a5f', '#3d405b', '#81b29a', '#f2cc8f', '#6d9dc5', '#b56576', '#e9c46a'];
+
+// 不規則外框（平滑的隨機曲線），避免出現可對照的方框
+function blob(cx, cy, rx, ry, n, j) {
+  const pts = [], off = rand(0, Math.PI * 2);
+  for (let i = 0; i < n; i++) {
+    const a = off + i / n * Math.PI * 2 + rand(-.15, .15), k = 1 + rand(-j, j);
+    pts.push([cx + Math.cos(a) * rx * k, cy + Math.sin(a) * ry * k]);
+  }
+  let d = `M${f1(pts[0][0])} ${f1(pts[0][1])}`;
+  for (let i = 0; i < n; i++) {
+    const p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
+    d += ` C${f1(p1[0] + (p2[0] - p0[0]) / 6)} ${f1(p1[1] + (p2[1] - p0[1]) / 6)} ${f1(p2[0] - (p3[0] - p1[0]) / 6)} ${f1(p2[1] - (p3[1] - p1[1]) / 6)} ${f1(p2[0])} ${f1(p2[1])}`;
+  }
+  return d + 'Z';
+}
+
+/* ---- 8 種畫作 ---- */
+const ARTS = [
+  (x, y, w, h) => R(x, y, w, h, 'url(#gSunset)') + C(x + w * .5, y + h * .62, h * .17, '#fff1c1')
+    + P([[x, y + h], [x + w * .24, y + h * .6], [x + w * .42, y + h * .78], [x + w * .68, y + h * .45], [x + w, y + h * .8], [x + w, y + h]], '#7a8f7f'),
+  (x, y, w, h) => { const cs = pick([['#e07a5f', '#f2cc8f', '#81b29a'], ['#264653', '#e9c46a', '#e76f51'], ['#6d597a', '#b56576', '#eaac8b']]);
+    return R(x, y, w, h, '#efe3cf') + cs.map((c, i) => R(x + w * .07, y + h * (.07 + i * .31), w * .86, h * .26, c, 'rx="3"')).join(''); },
+  (x, y, w, h) => R(x, y, w, h * .6, '#cfe7ee') + R(x, y + h * .6, w, h * .4, '#4f8fa8') + C(x + w * .75, y + h * .22, h * .1, '#f6d78b')
+    + P([[x + w * .4, y + h * .58], [x + w * .4, y + h * .24], [x + w * .58, y + h * .56]], '#fff')
+    + P([[x + w * .3, y + h * .6], [x + w * .62, y + h * .6], [x + w * .57, y + h * .68], [x + w * .35, y + h * .68]], '#8b5e3c'),
+  (x, y, w, h) => R(x, y, w, h, '#f4ead8') + R(x, y + h * .76, w, h * .24, '#c9a77c')
+    + C(x + w * .3, y + h * .64, h * .14, '#e2725b') + C(x + w * .52, y + h * .66, h * .12, '#f0b94a')
+    + `<ellipse cx="${f1(x + w * .72)}" cy="${f1(y + h * .67)}" rx="${f1(h * .14)}" ry="${f1(h * .1)}" fill="#93b464"/>`,
+  (x, y, w, h) => { let o = R(x, y, w, h, '#f3eadb');
+    for (let i = 0; i < 6; i++) o += C(x + rand(.1, .9) * w, y + rand(.1, .9) * h, rand(.06, .2) * h, pick(PAL), 'opacity=".85"');
+    return o + `<line x1="${f1(x)}" y1="${f1(y + h * rand(.6, 1))}" x2="${f1(x + w)}" y2="${f1(y + h * rand(0, .4))}" stroke="#3d405b" stroke-width="2"/>`; },
+  (x, y, w, h) => { let o = R(x, y, w, h, '#1f2a4a') + C(x + w * rand(.6, .85), y + h * .25, h * .12, '#f4efd2');
+    for (let i = 0; i < 14; i++) o += C(x + rand(0, w), y + rand(0, h * .55), rand(.6, 1.4), '#fff');
+    return o + P([[x, y + h], [x, y + h * .7], [x + w * .35, y + h * .58], [x + w * .7, y + h * .74], [x + w, y + h * .64], [x + w, y + h]], '#14203a'); },
+  (x, y, w, h) => { const cx = x + w * .5, b = y + h * .92;
+    let o = R(x, y, w, h, '#e9efe6');
+    for (let i = 0; i < 4; i++) { const fx = cx + rand(-.3, .3) * w, fy = y + rand(.15, .4) * h;
+      o += `<line x1="${f1(cx)}" y1="${f1(y + h * .55)}" x2="${f1(fx)}" y2="${f1(fy)}" stroke="#6f8f5f" stroke-width="2"/>` + C(fx, fy, h * .07, pick(PAL)); }
+    return o + P([[cx - w * .12, y + h * .52], [cx + w * .12, y + h * .52], [cx + w * .16, b], [cx - w * .16, b]], '#5f7fa3'); },
+  (x, y, w, h) => { let o = R(x, y, w, h, '#f6efe4');
+    for (let i = 0; i < 5; i++) o += P([[x + rand(0, w), y + rand(0, h)], [x + rand(0, w), y + rand(0, h)], [x + rand(0, w), y + rand(0, h)]], pick(PAL), 'opacity=".8"');
+    return o; }
+];
+const FRAMES = [{ o: '#8b5e3c', i: '#a3734d' }, { o: '#2f2f33', i: '#4a4a52' }, { o: '#b8913f', i: '#d6b466' }, { o: '#f4f1ea', i: '#dcd6ca' }];
+
+function paintDistractors() {
+  let s = '';
+  // 斜向的壁紙紋路
+  s += `<g transform="rotate(${f1(sgn(8, 30))} 200 150)" stroke="#000" stroke-opacity=".09" stroke-width="2" stroke-linecap="round">`;
+  for (let r = -4; r < 13; r++) for (let c = -4; c < 15; c++) {
+    const X = c * 38 + (r % 2 ? 19 : 0), Y = r * 32;
+    s += `<line x1="${X}" y1="${Y}" x2="${X + 9}" y2="${Y}"/>`;
+  }
+  s += '</g>';
+  // 從窗戶斜射進來的光
+  const lx = rand(40, 300);
+  s += `<g transform="rotate(${f1(sgn(18, 45))} ${f1(lx)} 150)" opacity=".35">${R(lx, -150, rand(28, 60), 600, '#fff')}${R(lx + rand(70, 100), -150, rand(14, 30), 600, '#fff')}</g>`;
+  // 垂掛的串燈（自然下垂的弧線）
+  const ax = rand(20, 120), bx = rand(280, 380), ay = rand(25, 70), by = rand(25, 70), sag = rand(35, 70);
+  const mx = (ax + bx) / 2, my = Math.max(ay, by) + sag;
+  s += `<path d="M${f1(ax)} ${f1(ay)} Q${f1(mx)} ${f1(my + sag * .6)} ${f1(bx)} ${f1(by)}" fill="none" stroke="#7a6f62" stroke-width="1.2"/>`;
+  for (let i = 1; i < 12; i++) {
+    const t = i / 12, qx = (1 - t) ** 2 * ax + 2 * (1 - t) * t * mx + t * t * bx, qy = (1 - t) ** 2 * ay + 2 * (1 - t) * t * (my + sag * .6) + t * t * by;
+    s += C(qx, qy + 4, 3.2, pick(['#ffd97a', '#ffb38a', '#fff1c1']), 'opacity=".9"');
+  }
+  // 斜貼的便利貼 / 照片
+  for (let i = 0; i < 2; i++) {
+    const px = i ? rand(300, 350) : rand(40, 90), py = rand(190, 235);
+    s += `<g transform="rotate(${f1(sgn(10, 28))} ${f1(px)} ${f1(py)})">${R(px - 13, py - 13, 26, 26, pick(['#f7e08a', '#f4b6a6', '#b9dcc9', '#c9d7f2']))}</g>`;
+  }
+  // 牆上裂痕
+  let cx = rand(40, 360), cy = rand(30, 110), d = `M${f1(cx)} ${f1(cy)}`;
+  for (let i = 0; i < 6; i++) { cx += rand(-22, 22); cy += rand(8, 20); d += ` L${f1(cx)} ${f1(cy)}`; }
+  return s + `<path d="${d}" fill="none" stroke="#a89a85" stroke-width="1.3" opacity=".6"/>`;
+}
+function buildPaint() {
+  const d = blob(200, 150, 172, 125, 11, .09);
+  $('#lvClip').setAttribute('d', d);
+  const o = $('#lvOutline'); o.setAttribute('d', d); o.setAttribute('stroke', '#d9cfbf'); o.setAttribute('stroke-width', '2');
+  $('#lvBg').innerHTML = R(-10, -10, 420, 320, pick(['#f1e9dc', '#e6edee', '#f2e4dd', '#ece9dc', '#e9e4ef'])) + paintDistractors();
+  const w = Math.round(rand(110, 165)), h = Math.round(rand(80, 135));
+  const x = 200 - w / 2, y = 165 - h / 2, ny = Math.round(y - rand(30, 45));
+  const fr = pick(FRAMES), ft = Math.round(rand(6, 10)), m = Math.random() < .5 ? 6 : 0;
+  const ax = x + ft + m, ay = y + ft + m, aw = w - 2 * (ft + m), ah = h - 2 * (ft + m);
+  $('#lvRot').innerHTML =
+    `<line x1="200" y1="${ny}" x2="${f1(x + w * .2)}" y2="${f1(y + 5)}" stroke="#6d6253" stroke-width="1.5"/>`
+    + `<line x1="200" y1="${ny}" x2="${f1(x + w * .8)}" y2="${f1(y + 5)}" stroke="#6d6253" stroke-width="1.5"/>`
+    + R(x + 4, y + 6, w, h, 'rgba(60,40,20,.16)', 'rx="2"') + R(x, y, w, h, fr.o, 'rx="2"')
+    + R(x + ft * .45, y + ft * .45, w - ft * .9, h - ft * .9, fr.i)
+    + (m ? R(x + ft, y + ft, w - 2 * ft, h - 2 * ft, '#fbf7f0') : '')
+    + `<clipPath id="cArt">${R(ax, ay, aw, ah, '#fff')}</clipPath><g clip-path="url(#cArt)">${pick(ARTS)(ax, ay, aw, ah)}</g>`;
+  $('#lvFg').innerHTML = C(200, ny, 4, '#5a5146');
+  $('#lvRef').innerHTML = `<rect class="lv-ref" x="${f1(x)}" y="${f1(y)}" width="${w}" height="${h}"/>`;
+  lv.px = 200; lv.py = ny;
+}
+
+/* ---- 5 張相機風景（輪流出現） ---- */
+function ridge(hy, a, b, fill, mirror, ex = '') {
+  const pts = [[-400, hy]];
+  for (let x = -400; x <= 800; x += rand(40, 90)) pts.push([x, hy - rand(a, b)]);
+  pts.push([800, hy]);
+  return P(mirror ? pts.map(([x, y]) => [x, 2 * hy - y]) : pts, fill, ex);
+}
+function waves(hy, col) {
+  let o = `<g stroke="${col}" stroke-width="2" stroke-linecap="round" opacity=".5">`;
+  for (let i = 0; i < 9; i++) { const wx = rand(40, 340), wy = hy + rand(12, 140), wl = rand(20, 50); o += `<line x1="${f1(wx)}" y1="${f1(wy)}" x2="${f1(wx + wl)}" y2="${f1(wy)}"/>`; }
+  return o + '</g>';
+}
+const CAMS = [
+  hy => { const bx = rand(230, 290);
+    return BIG(-400, hy, 'url(#gSky)') + C(rand(110, 290), hy - rand(40, 75), 20, '#fff4c9')
+      + P([[80, hy], [120, hy - 28], [148, hy - 14], [178, hy - 36], [235, hy]], '#6f8f7b')
+      + BIG(hy, 700, 'url(#gSea)') + waves(hy, '#bfe3ec')
+      + P([[bx, hy - 2], [bx + 14, hy - 30], [bx + 14, hy - 2]], '#f3f3f3') + P([[bx - 4, hy - 2], [bx + 22, hy - 2], [bx + 18, hy + 4], [bx, hy + 4]], '#f3f3f3'); },
+  hy => { let o = BIG(-400, hy, 'url(#gDusk)') + C(rand(120, 280), hy - 25, 26, '#ffd9a8', 'opacity=".9"');
+    for (let x = -120; x < 520;) { const bw = rand(18, 40), bh = rand(25, 105); o += R(x, hy - bh, bw, bh, pick(['#3d4a6b', '#46537a', '#333e5c', '#525d84']));
+      for (let k = 0; k < 4; k++) o += R(x + rand(3, bw - 7), hy - bh + rand(6, bh - 8), 4, 5, '#ffd97a', 'opacity=".8"');
+      x += bw + rand(0, 6); }
+    const vx = rand(150, 250);
+    return o + BIG(hy, 700, '#3a3f4f') + P([[vx - 5, hy], [vx + 5, hy], [vx + 280, 700], [vx - 280, 700]], '#2c303c')
+      + `<line x1="${f1(vx)}" y1="${hy}" x2="${f1(vx + rand(-160, 160))}" y2="700" stroke="#e8d27a" stroke-width="3" stroke-dasharray="14 12"/>`; },
+  hy => { const far = ridge(hy, 40, 105, '#8c9bb3'), near = ridge(hy, 8, 40, '#5d6f63');
+    return BIG(-400, hy, 'url(#gSkyPale)') + far + near + BIG(hy, 700, 'url(#gLake)')
+      + far.replace('<path', '<path transform="matrix(1 0 0 -1 0 ' + 2 * hy + ')" opacity=".28"')
+      + near.replace('<path', '<path transform="matrix(1 0 0 -1 0 ' + 2 * hy + ')" opacity=".3"'); },
+  hy => { const vx = rand(110, 290), tx = rand(70, 330);
+    let o = BIG(-400, hy, 'url(#gSky)') + C(rand(100, 300), hy - rand(45, 80), 18, '#fff6cf') + ridge(hy, 4, 14, '#4f6b45') + BIG(hy, 700, '#8fb36a');
+    o += `<g stroke="#769a52" stroke-width="2">`;
+    for (let i = -12; i <= 12; i++) o += `<line x1="${f1(vx)}" y1="${hy}" x2="${f1(vx + i * 70)}" y2="700"/>`;
+    return o + '</g>' + R(tx - 3, hy + 10, 6, 34, '#6b4f36') + C(tx, hy + 4, 22, '#4f7a3e'); },
+  hy => { const mx = rand(120, 280);
+    let o = BIG(-400, hy, 'url(#gNight)');
+    for (let i = 0; i < 40; i++) o += C(rand(-60, 460), rand(-150, hy - 10), rand(.6, 1.5), '#fff', 'opacity=".85"');
+    o += C(mx, hy - rand(55, 85), 16, '#f4efd2') + ridge(hy, 6, 30, '#1b2238') + BIG(hy, 700, '#16203a');
+    for (let i = 0; i < 9; i++) { const ww = 34 - i * 3; o += R(mx - ww / 2 + rand(-4, 4), hy + 8 + i * 13, ww, 2.5, '#f4efd2', 'opacity=".5"'); }
+    return o; }
+];
+function buildCam() {
+  const d = 'M20 16 H380 V284 H20 Z';
+  $('#lvClip').setAttribute('d', d);
+  const o = $('#lvOutline'); o.setAttribute('d', d); o.setAttribute('stroke', '#26262b'); o.setAttribute('stroke-width', '8');
+  $('#lvBg').innerHTML = R(0, 0, 400, 300, '#26262b');
+  const hy = Math.round(rand(125, 175));
+  $('#lvRot').innerHTML = CAMS[lv.camIdx++ % CAMS.length](hy);
+  $('#lvFg').innerHTML = R(20, 16, 360, 268, 'url(#gVignette)', 'opacity=".7"')
+    + `<g transform="rotate(${f1(sgn(20, 70))} 200 150)">${R(-80, rand(110, 190), 560, 2, '#fff', 'opacity=".18"')}${C(rand(110, 180), 150, 10, '#fff', 'opacity=".12"')}${C(rand(230, 300), 150, 18, '#ffe9b0', 'opacity=".1"')}</g>`
+    + `<text x="34" y="38" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif"><tspan fill="#ff5a5a">●</tspan> REC</text>`
+    + `<text x="366" y="38" fill="#fff" font-size="12" font-family="monospace" text-anchor="end" opacity=".85">ISO100</text>`
+    + `<text x="200" y="272" fill="#fff" font-size="12" font-family="monospace" text-anchor="middle" opacity=".85">1/250  F8</text>`;
+  $('#lvRef').innerHTML = `<line class="lv-ref" x1="0" y1="${hy}" x2="400" y2="${hy}"/>`;
+  lv.px = 200; lv.py = hy;
+}
+
+const lv = { mode: 'paint', theta: 0, dirs: { L: false, R: false }, since: { L: 0, R: 0 }, raf: 0, last: 0, done: false, px: 200, py: 150, camIdx: Math.floor(Math.random() * 5) };
+function lvDraw() {
+  $('#lvRot').setAttribute('transform', `rotate(${lv.theta} ${lv.px} ${lv.py})`);
+}
+function lvNew() {
+  lv.theta = (Math.random() < .5 ? -1 : 1) * rand(3, 18);
+  lv.done = false; lv.dirs.L = lv.dirs.R = false;
+  if (lv.mode === 'paint') buildPaint(); else buildCam();
+  $('#lvRef').style.display = 'none';
+  $('#lvResult').hidden = true; $('#lvNext').hidden = true;
+  $('#lvCtrl').hidden = false; $('#lvHint').hidden = false;
+  lvDraw();
+}
+function lvLoop(now) {
+  const dt = (now - lv.last) / 1000; lv.last = now;
+  let moved = false;
+  for (const d of ['L', 'R']) {
+    if (lv.dirs[d] && now - lv.since[d] > 250) {     // 長按 0.25 秒後才開始連續旋轉
+      lv.theta += (d === 'R' ? -1 : 1) * 6 * dt; moved = true;
+    }
+  }
+  if (moved) { lv.theta = clamp(lv.theta, -45, 45); lvDraw(); }
+  if (lv.dirs.L || lv.dirs.R) lv.raf = requestAnimationFrame(lvLoop); else lv.raf = 0;
+}
+function lvPress(d) {
+  if (lv.done || lv.dirs[d]) return;
+  lv.dirs[d] = true; lv.since[d] = performance.now();
+  lv.theta = clamp(lv.theta + (d === 'R' ? -1 : 1) * 0.2, -45, 45);   // 點一下微調 0.2°
+  lvDraw();
+  if (!lv.raf) { lv.last = performance.now(); lv.raf = requestAnimationFrame(lvLoop); }
+}
+function lvRelease(d) { lv.dirs[d] = false; }
+function lvSubmit() {
+  if (lv.done) return;
+  lv.done = true; lv.dirs.L = lv.dirs.R = false;
+  const err = Math.abs(lv.theta);
+  const score = Math.max(0, Math.round(100 - err * 15));
+  const side = err < 0.1 ? '完美水平！' : (lv.theta > 0 ? '右邊偏低（還要按 → 抬高右邊）' : '左邊偏低（還要按 ← 抬高左邊）');
+  $('#lvRef').style.display = '';
+  $('#lvResult').innerHTML = resultHTML(score, `還差 <b>${err.toFixed(2)}°</b>・${side}<br>橘色虛線是真正的水平位置`);
+  $('#lvResult').hidden = false; $('#lvCtrl').hidden = true; $('#lvHint').hidden = true; $('#lvNext').hidden = false;
+  record('level', score);
+}
+holdButton($('#lvLeft'), () => lvPress('L'), () => lvRelease('L'));
+holdButton($('#lvRight'), () => lvPress('R'), () => lvRelease('R'));
+$('#lvDone').addEventListener('click', lvSubmit);
+$('#lvNext').addEventListener('click', lvNew);
+document.querySelectorAll('#lvSeg button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#lvSeg button').forEach(x => x.classList.toggle('on', x === b));
+  lv.mode = b.dataset.mode; lvNew();
+}));
+
+/* =========================================================
+   遊戲四：節奏鼓手
+   ========================================================= */
+const PAT = { 1: '一拍一下', 2: '一拍兩下', 3: '一拍三下', 4: '一拍四下' };
+const PAT_SUB = { 1: '四分音符', 2: '八分音符', 3: '三連音', 4: '十六分音符' };
+const BPM_RANGE = { 1: [60, 140], 2: [60, 120], 3: [60, 100], 4: [60, 90] };
+const COUNT_IN = 4, BARS = 4;
+const JW = { perfect: 45, great: 85, good: 130 };   // 判定範圍（毫秒）
+const HAND = { L: '左', R: '右' };
+const dr = { mode: 'basic', pat: [], ctx: null, noise: null, playing: false, bpm: 80, sub: 2, notes: [], nodes: [], raf: 0, extra: 0, lastBeat: -99, lastChip: -1 };
+
+function ensureCtx() {
+  if (!dr.ctx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    dr.ctx = new AC();
+    const len = Math.floor(dr.ctx.sampleRate * 0.2);
+    dr.noise = dr.ctx.createBuffer(1, len, dr.ctx.sampleRate);
+    const d = dr.noise.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  }
+  if (dr.ctx.state === 'suspended') dr.ctx.resume();
+}
+function clickAt(t, accent) {
+  const ctx = dr.ctx, o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = 'sine'; o.frequency.value = accent ? 1600 : 1000;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(accent ? 0.6 : 0.35, t + 0.002);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
+  o.connect(g).connect(ctx.destination);
+  o.start(t); o.stop(t + 0.08); dr.nodes.push(o);
+}
+function snare(hand) {
+  if (!dr.ctx) return;
+  const ctx = dr.ctx, t = ctx.currentTime;
+  const src = ctx.createBufferSource(); src.buffer = dr.noise;
+  const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = hand === 'L' ? 1800 : 2300; f.Q.value = .8;
+  const g = ctx.createGain(); g.gain.setValueAtTime(0.55, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+  src.connect(f).connect(g).connect(ctx.destination);
+  src.start(t); src.stop(t + 0.15);
+}
+function judge(text, cls) {
+  const j = $('#drJudge');
+  j.className = 'judge'; void j.offsetWidth;
+  j.textContent = text; j.className = 'judge show ' + cls;
+}
+function flashPad(hand) {
+  const p = $('#drPad'), c = 'hit' + hand;
+  p.classList.remove(c); void p.offsetWidth; p.classList.add(c);
+  clearTimeout(p['_t' + hand]); p['_t' + hand] = setTimeout(() => p.classList.remove(c), 110);
+}
+function setLight(i) {
+  document.querySelectorAll('#drLights .light').forEach((l, k) => l.classList.toggle('on', k === i));
+}
+function setChip(i) {
+  document.querySelectorAll('#drSticking .chip').forEach((c, k) => c.classList.toggle('now', k === i));
+}
+
+function drNew() {
+  drStop();
+  dr.sub = pick(dr.mode === 'adv' ? [3, 4] : [1, 2, 3, 4]);   // 進階空拍只練一拍四下與三連音
+  const [a, b] = BPM_RANGE[dr.sub];
+  dr.bpm = a + Math.round(Math.random() * (b - a) / 2) * 2;
+  $('#drBpm').textContent = dr.bpm;
+  const slots = 4 * dr.sub;
+  // 手順依格子位置交替：右左右左…；進階模式隨機挖空（空拍不打）
+  dr.pat = Array.from({ length: slots }, (_, k) => k % 2 ? 'L' : 'R');
+  dr.cell = '';
+  if (dr.mode === 'adv') {
+    // 固定規律：取一組「右左右左」（三連音為「右左右」）挖掉部分格子，整題重複同一組
+    const L = dr.sub === 3 ? 3 : 4;
+    const opts = [];
+    for (let m = 1; m < (1 << L) - 1; m++) opts.push(m);   // 空 1 ～ (L-1) 格，至少保留一下
+    const mask = pick(opts);
+    dr.pat = dr.pat.map((h, k) => (mask >> (k % L)) & 1 ? null : h);
+    const shown = L === 3 ? 6 : L;            // 三連音手順每拍左右互換，所以以兩拍為一組顯示
+    dr.cell = dr.pat.slice(0, shown).map(h => h ? HAND[h] : '空').join('');
+    dr.reps = slots / shown;
+  }
+  const ex = dr.mode === 'adv' ? `${dr.cell} × ${dr.reps}（每小節）` : dr.pat.slice(0, Math.max(4, dr.sub)).map(h => HAND[h]).join('') + '…';
+  $('#drPattern').innerHTML = `${PAT[dr.sub]}${dr.mode === 'adv' ? '・進階' : ''}<small>${PAT_SUB[dr.sub]}・手順 ${ex}</small><small>♩ 是拍點，要和節拍器「嗒」聲同時打${dr.mode === 'adv' ? '；「空」的地方不要打' : ''}</small>`;
+  let html = '', k = 0;
+  for (let beat = 0; beat < 4; beat++) {
+    html += '<div class="beat-group">';
+    for (let s = 0; s < dr.sub; s++, k++) {
+      const h = dr.pat[k];
+      html += `<div class="chip ${h || 'rest'}${s === 0 ? ' first' : ''}">${h ? HAND[h] : '空'}</div>`;
+    }
+    html += '</div>';
+  }
+  $('#drSticking').innerHTML = html;
+  $('#drResult').hidden = true; $('#drCount').textContent = ''; $('#drJudge').textContent = '';
+  $('#drStatus').textContent = '按「開始」或空白鍵；預備 4 拍後，在下一聲「嗒」打下第一下（左手 F、右手 J；手機點鼓的左半或右半邊）';
+  $('#drStart').textContent = '▶ 開始'; $('#drStart').disabled = false;
+  setLight(-1); setChip(-1);
+}
+function drStart() {
+  if (dr.playing) return;
+  ensureCtx(); if (!dr.ctx) { $('#drStatus').textContent = '這個瀏覽器不支援 Web Audio'; return; }
+  const ctx = dr.ctx, spb = 60 / dr.bpm;
+  const t0 = ctx.currentTime + 0.25;
+  const lat = (ctx.outputLatency || 0) + (ctx.baseLatency || 0);
+  const perfNow = performance.now(), audNow = ctx.currentTime;
+  const toPerf = a => perfNow + (a - audNow + lat) * 1000;
+
+  dr.nodes = [];
+  for (let i = 0; i < COUNT_IN + BARS * 4; i++) clickAt(t0 + i * spb, i % 4 === 0);
+
+  dr.startPerf = toPerf(t0);
+  dr.playPerf = toPerf(t0 + COUNT_IN * spb);
+  dr.spbMs = spb * 1000; dr.stepMs = dr.spbMs / dr.sub;
+  dr.win = Math.min(180, dr.stepMs * 0.5);
+  dr.notes = [];
+  dr.slots = BARS * 4 * dr.sub;
+  for (let k = 0; k < dr.slots; k++) {
+    const h = dr.pat[k % dr.pat.length];
+    if (h) dr.notes.push({ t: dr.playPerf + k * dr.stepMs, hand: h, dt: null, wrong: false, miss: false });
+  }
+  dr.endPerf = dr.playPerf + (dr.slots - 1) * dr.stepMs + dr.win + 300;
+  dr.extra = 0; dr.lastBeat = -99; dr.lastChip = -1; dr.playing = true;
+  $('#drResult').hidden = true; $('#drJudge').textContent = '';
+  $('#drStart').disabled = true; $('#drStart').textContent = '演奏中…';
+  dr.raf = requestAnimationFrame(drLoop);
+}
+function drLoop(now) {
+  if (!dr.playing) return;
+  for (const n of dr.notes) {
+    if (n.dt === null && !n.miss && now - n.t > dr.win) { n.miss = true; judge('Miss', 'miss'); }
+  }
+  const beat = Math.floor((now - dr.startPerf) / dr.spbMs);
+  if (beat !== dr.lastBeat) {
+    dr.lastBeat = beat;
+    if (beat < 0) { $('#drStatus').textContent = '準備…'; }
+    else if (beat < COUNT_IN) { $('#drCount').textContent = beat + 1; $('#drStatus').textContent = '預備拍… 第 4 拍後的下一聲「嗒」打第一下'; setLight(beat % 4); }
+    else if (beat < COUNT_IN + BARS * 4) {
+      const pb = beat - COUNT_IN;
+      $('#drCount').textContent = pb === 0 ? '打！' : '';
+      $('#drStatus').textContent = `第 ${Math.floor(pb / 4) + 1} / ${BARS} 小節`;
+      setLight(pb % 4);
+    } else { setLight(-1); }
+  }
+  // 讓燈只亮一下
+  if (beat >= 0 && (now - dr.startPerf) % dr.spbMs > 120) setLight(-1);
+  if (now >= dr.playPerf - 20) {
+    const k = Math.floor((now - dr.playPerf + 20) / dr.stepMs);
+    const idx = k < dr.slots ? k % (4 * dr.sub) : -1;
+    if (idx !== dr.lastChip) { dr.lastChip = idx; setChip(idx); }
+  }
+  if (now > dr.endPerf) { drFinish(); return; }
+  dr.raf = requestAnimationFrame(drLoop);
+}
+function drHit(hand) {
+  ensureCtx(); snare(hand); flashPad(hand);
+  if (!dr.playing) return;
+  const now = performance.now();
+  if (now < dr.playPerf - dr.win) return;          // 預備拍期間不計分
+  let best = null, bd = Infinity;
+  for (const n of dr.notes) {
+    if (n.dt !== null || n.miss) continue;
+    if (n.t - now > dr.win) break;
+    const d = now - n.t;
+    if (Math.abs(d) <= dr.win && Math.abs(d) < Math.abs(bd)) { best = n; bd = d; }
+  }
+  if (!best) { dr.extra++; judge(dr.mode === 'adv' ? '空拍要停！' : '多打了', 'bad'); return; }
+  best.dt = bd; best.wrong = best.hand !== hand;
+  const a = Math.abs(bd);
+  const label = a <= JW.perfect ? 'Perfect' : a <= JW.great ? 'Great' : a <= JW.good ? 'Good' : 'Bad';
+  const side = a <= JW.perfect ? '' : (bd < 0 ? ' 早' : ' 晚');
+  if (best.wrong) judge(`${label} · 手順錯`, 'bad');
+  else judge(label + side, label.toLowerCase());
+}
+function drFinish() {
+  dr.playing = false; cancelAnimationFrame(dr.raf);
+  setLight(-1); setChip(-1);
+  const N = dr.notes.length;
+  const c = { Perfect: 0, Great: 0, Good: 0, Bad: 0, Miss: 0 };
+  let sum = 0, wrong = 0; const offs = [];
+  for (const n of dr.notes) {
+    if (n.dt === null) { c.Miss++; continue; }
+    const a = Math.abs(n.dt);
+    let s, lab;
+    if (a <= JW.perfect) { s = 100; lab = 'Perfect'; } else if (a <= JW.great) { s = 90; lab = 'Great'; }
+    else if (a <= JW.good) { s = 70; lab = 'Good'; } else { s = 40; lab = 'Bad'; }
+    c[lab]++;
+    if (n.wrong) { s *= .6; wrong++; }
+    sum += s; offs.push(n.dt);
+  }
+  const score = clamp(Math.round(sum / N - dr.extra * (dr.mode === 'adv' ? 3 : 1)), 0, 100);
+  let tendency = '沒有打到音符';
+  let spread = '';
+  if (offs.length) {
+    const mean = offs.reduce((x, y) => x + y, 0) / offs.length;
+    const sd = Math.sqrt(offs.reduce((x, y) => x + (y - mean) ** 2, 0) / offs.length);
+    tendency = Math.abs(mean) <= 10 ? `平均誤差 ${Math.round(mean)} ms，拍點很準`
+      : mean < 0 ? `平均早了 <b>${Math.round(-mean)} ms</b>（有搶拍傾向）`
+      : `平均晚了 <b>${Math.round(mean)} ms</b>（有拖拍傾向）`;
+    spread = `・穩定度 ±${Math.round(sd)} ms`;
+  }
+  $('#drResult').innerHTML = `
+    <div class="num">${score}</div><div class="grade">${grade(score)}</div>
+    <div class="tally">
+      <span style="color:#ffe45e">Perfect ${c.Perfect}</span><span style="color:#36e6ff">Great ${c.Great}</span>
+      <span style="color:#7dffb0">Good ${c.Good}</span><span style="color:#ff9fb4">Bad ${c.Bad}</span>
+      <span style="color:#ff6b8a">Miss ${c.Miss}</span><span>手順錯 ${wrong}</span><span>${dr.mode === 'adv' ? '空拍誤打' : '多打'} ${dr.extra}</span>
+    </div>
+    <div class="detail">${tendency}${spread}</div>`;
+  $('#drResult').hidden = false; $('#drCount').textContent = '';
+  $('#drStatus').textContent = '可以再挑戰同一題，或換下一題';
+  $('#drStart').disabled = false; $('#drStart').textContent = '↻ 再試一次';
+  record('drum', score);
+}
+function drStop() {
+  if (!dr.playing) return;
+  dr.playing = false; cancelAnimationFrame(dr.raf);
+  dr.nodes.forEach(o => { try { o.stop(); } catch (e) {} });
+  dr.nodes = [];
+  setLight(-1); setChip(-1);
+  $('#drStart').disabled = false; $('#drStart').textContent = '▶ 開始'; $('#drCount').textContent = '';
+}
+{
+  const p = $('#drPad');
+  p.addEventListener('contextmenu', e => e.preventDefault());
+  p.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    const r = p.getBoundingClientRect();
+    drHit(e.clientX < r.left + r.width / 2 ? 'L' : 'R');
+  });
+}
+document.querySelectorAll('#drMode button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#drMode button').forEach(x => x.classList.toggle('on', x === b));
+  dr.mode = b.dataset.mode; drNew();
+}));
+$('#drStart').addEventListener('click', drStart);
+$('#drNext').addEventListener('click', drNew);
+
+/* =========================================================
+   鍵盤操作
+   ========================================================= */
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const v = document.body.dataset.view;
+  if (v === 'angle' && e.code === 'Space') {
+    e.preventDefault(); if (e.repeat) return;
+    if (ang.done) angNew(); else angStart();
+  } else if (v === 'level') {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); if (!e.repeat) lvPress('L'); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); if (!e.repeat) lvPress('R'); }
+    else if (e.key === 'Enter') { e.preventDefault(); if (e.repeat) return; lv.done ? lvNew() : lvSubmit(); }
+  } else if (v === 'drum') {
+    if (e.code === 'KeyF') { if (!e.repeat) drHit('L'); }
+    else if (e.code === 'KeyJ') { if (!e.repeat) drHit('R'); }
+    else if (e.code === 'Space') { e.preventDefault(); if (!e.repeat && !dr.playing) drStart(); }
+  }
+});
+document.addEventListener('keyup', e => {
+  const v = document.body.dataset.view;
+  if (e.code === 'Space' && (v === 'angle' || v === 'drum')) e.preventDefault();
+  if (v === 'angle' && e.code === 'Space') angEnd();
+  if (v === 'level') {
+    if (e.key === 'ArrowLeft') lvRelease('L');
+    if (e.key === 'ArrowRight') lvRelease('R');
+  }
+});
+window.addEventListener('blur', () => { angEnd(); lvRelease('L'); lvRelease('R'); });
+
+/* 啟動 */
+angNew(); colNew(); lvNew(); drNew();
+route();
+</script>
+</body>
+</html>
